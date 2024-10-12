@@ -9,6 +9,7 @@ export default function Cli() {
   const [projectName, setProjectName] = useState('')
   const [clientKey, setClientKey] = useState('')
   const [smartWallet, setSmartWallet] = useState(true)
+  const [paymaster, setPaymaster] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [isCompleted, setIsCompleted] = useState(false)
 
@@ -16,6 +17,7 @@ export default function Cli() {
     { prompt: 'Project name:', initial: 'my-onchainkit-app' },
     { prompt: 'Enter your Coinbase Developer Platform API Key: (optional)', initial: '' },
     { prompt: 'Use Coinbase Smart Wallet? (recommended)', initial: 'yes' },
+    { prompt: 'Sponsor transactions?', initial: 'yes' }, // New step added here
   ]
 
   useEffect(() => {
@@ -39,7 +41,8 @@ export default function Cli() {
       } else if (step < steps.length - 1) {
         setStep(step + 1)
       } else if (step === steps.length - 1) {
-        setSmartWallet(e.currentTarget.value.toLowerCase() !== 'no')
+        const inputValue = e.currentTarget.value.toLowerCase()
+        setPaymaster(inputValue !== 'no' && inputValue !== 'n') // Handle "no" and "n"
         setStep(step + 1)
       }
     }
@@ -107,6 +110,8 @@ export default function Cli() {
                   onChange={(e) => {
                     if (index === 0) setProjectName(e.target.value)
                     if (index === 1) setClientKey(e.target.value)
+                    if (index === 2) setSmartWallet(e.target.value.toLowerCase() !== 'no' && e.target.value.toLowerCase() !== 'n')
+                    if (index === 3) setPaymaster(e.target.value.toLowerCase() !== 'no' && e.target.value.toLowerCase() !== 'n') // Handle "no" and "n"
                   }}
                   autoFocus
                 />
@@ -115,6 +120,7 @@ export default function Cli() {
                   {index === 0 ? projectName || s.initial : ''}
                   {index === 1 ? (clientKey ? '*'.repeat(clientKey.length) : '') : ''}
                   {index === 2 ? (smartWallet ? 'yes' : 'no') : ''}
+                  {index === 3 ? (paymaster ? 'yes' : 'no') : ''} 
                 </span>
               )}
             </div>
@@ -130,6 +136,7 @@ export default function Cli() {
               <p className="text-magenta">Created new OnchainKit project in {projectName || 'my-onchainkit-app'}</p>
               <p className="mt-2">Integrations:</p>
               {smartWallet && <p className="text-green-400">✓ <span className="text-blue-400">Smart Wallet</span></p>}
+              {paymaster && <p className="text-green-400">✓ <span className="text-blue-400">Paymaster</span></p>}
               <p className="text-green-400">✓ <span className="text-blue-400">Base</span></p>
               {clientKey && <p className="text-green-400">✓ <span className="text-blue-400">Coinbase Developer Platform</span></p>}
               <p className="mt-2">Frameworks:</p>
